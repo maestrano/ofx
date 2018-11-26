@@ -64,7 +64,7 @@ describe OFX::Parser::OFX220 do
         @acct_info.description.should == 'CREDIT CARD'
         @acct_info.bank_id.should == ''
         @acct_info.id.should == '4400720'
-        @acct_info.type.should == nil
+        @acct_info.type.should == :creditcard
       end
     end
 
