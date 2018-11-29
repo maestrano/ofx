@@ -48,6 +48,40 @@ describe OFX::Parser::OFX102 do
     end
   end
 
+  context 'creditcard accounts' do
+    before do
+      @ofx = OFX::Parser::Base.new("spec/fixtures/creditcard.ofx")
+      @parser = @ofx.parser
+    end
+
+    it "should set account type" do
+      @parser.account.type.should == :creditcard
+    end
+
+  end
+
+  context 'creditline accounts' do
+    before do
+      @ofx = OFX::Parser::Base.new("spec/fixtures/creditline.ofx")
+      @parser = @ofx.parser
+    end
+
+    it "should set account type" do
+      @parser.account.type.should == :creditline
+    end
+
+    it 'should parse the transactions correctly' do
+      transaction = @parser.account.transactions.first
+      transaction.name.should == 'Payment'
+      transaction.extdname.should == 'Payment'
+      transaction.amount_in_pennies.should == 39146
+      transaction.type.should == :payment
+      transaction.fit_id.should == '161706996'
+
+      @parser.account.type.should == :creditline
+    end
+  end
+
   describe "#build_date" do
     context "without a Time Zone" do
       it "should default to GMT" do
@@ -63,5 +97,5 @@ describe OFX::Parser::OFX102 do
         @parser.send(:build_date, "20170904082855[-3:GMT]").should == Time.new(2017, 9, 4, 8, 28, 55, "-03:00")
       end
     end
-  end
+  end 
 end

@@ -105,7 +105,7 @@ module OFX
 
       def fetch_account_type(node)
         acct_type = ACCOUNT_TYPES[node.search("bankacctfrom > accttype").inner_text.to_s.upcase]
-        acct_type ||= node.search('ccacctinfo').any? ? :creditcard : nil
+        acct_type ||= node.search('ccacctfrom').any? ? :creditcard : nil
       end
 
       def build_status(node)
