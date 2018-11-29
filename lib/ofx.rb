@@ -19,6 +19,7 @@ require "ofx/status"
 require "ofx/transaction"
 require "ofx/version"
 require "ofx/account_info"
+require "ofx/credit_card_closing_info"
 
 def OFX(resource, &block)
   parser = OFX::Parser::Base.new(resource).parser
