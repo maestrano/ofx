@@ -11,5 +11,6 @@ module OFX
     attr_accessor :ref_number
     attr_accessor :type
     attr_accessor :sic
+    attr_accessor :extdname
   end
 end
