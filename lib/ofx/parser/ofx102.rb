@@ -214,8 +214,10 @@ module OFX
           fit_id: nested_closing.search('fitid').inner_text,
           date_close: build_date_or_nil(nested_closing.search('dtclose').inner_text),
           closing_balance: to_decimal_or_nil(nested_closing.search('balclose').inner_text),
+          opening_balance: to_decimal_or_nil(nested_closing.search('balopen').inner_text),
           payment_due_date: build_date_or_nil(nested_closing.search('dtpmtdue').inner_text),
           minimum_due_amount: to_decimal_or_nil(nested_closing.search('minpmtdue').inner_text),
+          past_due_amount: to_decimal_or_nil(nested_closing.search('pastdueamt').inner_text),
           last_payment_date: build_date_or_nil(nested_closing.search('lastpmtinfo > lastpmtdate').inner_text),
           last_payment_amount: to_decimal_or_nil(nested_closing.search('lastpmtinfo > lastpmtamt').inner_text),
         })

@@ -38,6 +38,7 @@ describe OFX::Parser::OFX102 do
         @credit_card_closing_info.closing_balance.should == -5859.08
         @credit_card_closing_info.payment_due_date.should == Time.gm(2018, 7, 1)
         @credit_card_closing_info.minimum_due_amount.should == 779
+        @credit_card_closing_info.past_due_amount.should == 615
         @credit_card_closing_info.last_payment_date.should == Time.gm(2018, 2, 6)
         @credit_card_closing_info.last_payment_amount.should == 73
       end
@@ -76,10 +77,11 @@ describe OFX::Parser::OFX102 do
         @credit_line_closing_info.currency_default.should == 'USD'
         @credit_line_closing_info.fit_id.should == 'FITIDCLSTMT20180130'
         @credit_line_closing_info.date_close.should == Time.gm(2018, 1, 30)
-        @credit_line_closing_info.opening_balance.should == nil
+        @credit_line_closing_info.opening_balance.should == 10000
         @credit_line_closing_info.closing_balance.should == -10414.76
         @credit_line_closing_info.payment_due_date.should == Time.gm(2017, 12, 1)
         @credit_line_closing_info.minimum_due_amount.should == 1534.38
+        @credit_line_closing_info.past_due_amount.should == 1022.92
         @credit_line_closing_info.last_payment_date.should == Time.gm(2017, 11, 2)
         @credit_line_closing_info.last_payment_amount.should == 511.46
       end
