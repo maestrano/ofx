@@ -52,6 +52,10 @@ module OFX
         @credit_card_closing_info ||= html.search('ccstmtendrs').collect { |node| build_credit_card_closing_info(node) }
       end
 
+      def credit_line_closing_info
+        @credit_line_closing_info ||= html.search('stmtendrs').collect { |node| build_credit_line_closing_info(node) }
+      end
+
       def self.parse_headers(header_text)
         # Change single CR's to LF's to avoid issues with some banks
         header_text.gsub!(/\r(?!\n)/, "\n")
@@ -193,14 +197,24 @@ module OFX
 
       def build_credit_card_closing_info(node)
         nested_closing = node.search('ccclosing')
-        OFX::CreditCardClosingInfo.new({
-          account_id:        node.search('ccacctfrom > acctid').inner_text,
-          currency_default:  node.search('curdef').inner_text,
-          fit_id:            nested_closing.search('fitid').inner_text,
-          date_close:        build_date_or_nil(nested_closing.search('dtclose').inner_text),
-          opening_balance:   to_decimal_or_nil(nested_closing.search('balopen').inner_text),
-          closing_balance:   to_decimal_or_nil(nested_closing.search('balclose').inner_text),
-          payment_due_date:  build_date_or_nil(nested_closing.search('dtpmtdue').inner_text),
+        account_id = node.search('ccacctfrom > acctid').inner_text
+        closing_info(nested_closing, node, account_id)
+      end
+
+      def build_credit_line_closing_info(node)
+        nested_closing = node.search('closing')
+        account_id = node.search('bankacctfrom > acctid').inner_text
+        closing_info(nested_closing, node, account_id)
+      end
+
+      def closing_info(nested_closing, node, account_id)
+        OFX::LiabilityClosingInfo.new({
+          account_id: account_id,
+          currency_default: node.search('curdef').inner_text,
+          fit_id: nested_closing.search('fitid').inner_text,
+          date_close: build_date_or_nil(nested_closing.search('dtclose').inner_text),
+          closing_balance: to_decimal_or_nil(nested_closing.search('balclose').inner_text),
+          payment_due_date: build_date_or_nil(nested_closing.search('dtpmtdue').inner_text),
           minimum_due_amount: to_decimal_or_nil(nested_closing.search('minpmtdue').inner_text),
           last_payment_date: build_date_or_nil(nested_closing.search('lastpmtinfo > lastpmtdate').inner_text),
           last_payment_amount: to_decimal_or_nil(nested_closing.search('lastpmtinfo > lastpmtamt').inner_text),

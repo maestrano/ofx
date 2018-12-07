@@ -1,5 +1,5 @@
 module OFX
-  class CreditCardClosingInfo < Foundation
+  class LiabilityClosingInfo < Foundation
     attr_accessor :account_id
     attr_accessor :currency_default
 
