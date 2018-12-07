@@ -10,6 +10,7 @@ module OFX
     attr_accessor :closing_balance
     attr_accessor :payment_due_date
     attr_accessor :minimum_due_amount
+    attr_accessor :past_due_amount
 
     attr_accessor :last_payment_date
     attr_accessor :last_payment_amount
