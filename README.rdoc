@@ -7,6 +7,16 @@ A simple OFX (Open Financial Exchange) parser built on top of Nokogiri. Currentl
 
 Works on both ruby 1.9 and 2.0.
 
+== Maestrano Branch
+
+This is based of the +master+ branch of +annacruz/ofx+ but includes the following changes:
+* Add Time Zone handling {#25}[https://github.com/annacruz/ofx/pull/25] (ouranos[https://github.com/ouranos])
+* Add extra account types {#26}[https://github.com/annacruz/ofx/pull/26] (ouranos[https://github.com/ouranos])
+* AFX v2.2 & Account Discovery feature/account_discovery[https://github.com/annacruz/ofx/compare/master...maestrano:feature/account-discovery] (paulstuartparker[https://github.com/paulstuartparker])
+* Add OFX::Status {#27}[https://github.com/annacruz/ofx/pull/27] (ouranos[https://github.com/ouranos])
+* Add OFX::Statement {#28}[https://github.com/annacruz/ofx/pull/28] (ouranos[https://github.com/ouranos])
+* Bump nokigiri to fix CVS issues {#29}[https://github.com/annacruz/ofx/pull/29] (ouranos[https://github.com/ouranos])
+
 == Usage
 
   require "ofx"
