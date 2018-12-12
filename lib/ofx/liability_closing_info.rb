@@ -6,6 +6,7 @@ module OFX
     attr_accessor :fit_id
     attr_accessor :date_close
 
+    attr_accessor :current_balance
     attr_accessor :opening_balance
     attr_accessor :closing_balance
     attr_accessor :payment_due_date
