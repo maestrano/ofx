@@ -36,6 +36,7 @@ describe OFX::Parser::OFX102 do
         @credit_card_closing_info.date_close.should == Time.gm(2018, 6, 4)
         @credit_card_closing_info.opening_balance.should == nil
         @credit_card_closing_info.closing_balance.should == -5859.08
+        @credit_card_closing_info.current_balance.should == -5859.08
         @credit_card_closing_info.payment_due_date.should == Time.gm(2018, 7, 1)
         @credit_card_closing_info.minimum_due_amount.should == 779
         @credit_card_closing_info.past_due_amount.should == 615

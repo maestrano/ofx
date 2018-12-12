@@ -222,6 +222,7 @@ module OFX
           date_close: build_date_or_nil(nested_closing.search('dtclose').inner_text),
           closing_balance: to_decimal_or_nil(nested_closing.search('balclose').inner_text),
           opening_balance: to_decimal_or_nil(nested_closing.search('balopen').inner_text),
+          current_balance: to_decimal_or_nil(html.search('ledgerbal > balamt').inner_text),
           payment_due_date: build_date_or_nil(nested_closing.search('dtpmtdue').inner_text),
           minimum_due_amount: to_decimal_or_nil(nested_closing.search('minpmtdue').inner_text),
           past_due_amount: to_decimal_or_nil(nested_closing.search('pastdueamt').inner_text),
