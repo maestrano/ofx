@@ -42,6 +42,7 @@ describe OFX::Parser::OFX102 do
         @credit_card_closing_info.past_due_amount.should == 615
         @credit_card_closing_info.last_payment_date.should == Time.gm(2018, 2, 6)
         @credit_card_closing_info.last_payment_amount.should == 73
+        @credit_card_closing_info.autopay.should == 'N'
       end
     end
 
@@ -56,6 +57,7 @@ describe OFX::Parser::OFX102 do
         @credit_card_closing_info.fit_id.should == 'FITIDCCSTMT1399928831'
         @credit_card_closing_info.last_payment_date.should == nil
         @credit_card_closing_info.last_payment_amount.should == nil
+        @credit_card_closing_info.autopay.should == 'N'
       end
     end
   end

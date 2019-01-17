@@ -228,6 +228,7 @@ module OFX
           past_due_amount: to_decimal_or_nil(nested_closing.search('pastdueamt').inner_text),
           last_payment_date: build_date_or_nil(nested_closing.search('lastpmtinfo > lastpmtdate').inner_text),
           last_payment_amount: to_decimal_or_nil(nested_closing.search('lastpmtinfo > lastpmtamt').inner_text),
+          autopay: nested_closing.search("autopay").inner_text
         })
       end
 
