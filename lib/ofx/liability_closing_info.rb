@@ -15,5 +15,6 @@ module OFX
 
     attr_accessor :last_payment_date
     attr_accessor :last_payment_amount
+    attr_accessor :autopay
   end
 end
