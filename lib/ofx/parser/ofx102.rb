@@ -7,7 +7,8 @@ module OFX
         "CHECKING" => :checking,
         "SAVINGS"  => :savings,
         "CREDITLINE" => :creditline,
-        "MONEYMRKT" => :moneymrkt
+        "MONEYMRKT" => :moneymrkt,
+        "CREDITCARD" => :creditcard
       }
 
       TRANSACTION_TYPES = [
@@ -48,6 +49,14 @@ module OFX
         @sign_on ||= build_sign_on
       end
 
+      def credit_card_closing_info
+        @credit_card_closing_info ||= html.search('ccstmtendrs').collect { |node| build_credit_card_closing_info(node) }
+      end
+
+      def credit_line_closing_info
+        @credit_line_closing_info ||= html.search('stmtendrs').collect { |node| build_credit_line_closing_info(node) }
+      end
+
       def self.parse_headers(header_text)
         # Change single CR's to LF's to avoid issues with some banks
         header_text.gsub!(/\r(?!\n)/, "\n")
@@ -86,12 +95,25 @@ module OFX
         OFX::Account.new({
           :bank_id           => node.search("bankacctfrom > bankid").inner_text,
           :id                => node.search("bankacctfrom > acctid, ccacctfrom > acctid").inner_text,
-          :type              => ACCOUNT_TYPES[node.search("bankacctfrom > accttype").inner_text.to_s.upcase],
+          :type              => fetch_account_type(node),
           :transactions      => build_transactions(node),
           :balance           => build_balance(node),
           :available_balance => build_available_balance(node),
           :currency          => node.search("stmtrs > curdef, ccstmtrs > curdef").inner_text
         })
+      end
+
+      def build_status(node)
+        OFX::Status.new({
+          :code              => node.search("code").inner_text.to_i,
+          :severity          => SEVERITY[node.search("severity").inner_text],
+          :message           => node.search("message").inner_text,
+        })
+      end
+
+      def fetch_account_type(node)
+        acct_type = ACCOUNT_TYPES[node.search("bankacctfrom > accttype").inner_text.to_s.upcase]
+        acct_type ||= node.search('ccacctfrom').any? ? :creditcard : nil
       end
 
       def build_status(node)
@@ -129,7 +151,8 @@ module OFX
           :ref_number        => element.search("refnum").inner_text,
           :posted_at         => build_date(element.search("dtposted").inner_text),
           :type              => build_type(element),
-          :sic               => element.search("sic").inner_text
+          :sic               => element.search("sic").inner_text,
+          :extdname          => element.search("extdname").inner_text
         })
       end
 
@@ -187,8 +210,46 @@ module OFX
         end
       end
 
+      def build_credit_card_closing_info(node)
+        nested_closing = node.search('ccclosing')
+        account_id = node.search('ccacctfrom > acctid').inner_text
+        closing_info(nested_closing, node, account_id)
+      end
+
+      def build_credit_line_closing_info(node)
+        nested_closing = node.search('closing')
+        account_id = node.search('bankacctfrom > acctid').inner_text
+        closing_info(nested_closing, node, account_id)
+      end
+
+      def closing_info(nested_closing, node, account_id)
+        OFX::LiabilityClosingInfo.new({
+          account_id: account_id,
+          currency_default: node.search('curdef').inner_text,
+          fit_id: nested_closing.search('fitid').inner_text,
+          date_close: build_date_or_nil(nested_closing.search('dtclose').inner_text),
+          closing_balance: to_decimal_or_nil(nested_closing.search('balclose').inner_text),
+          opening_balance: to_decimal_or_nil(nested_closing.search('balopen').inner_text),
+          current_balance: to_decimal_or_nil(html.search('ledgerbal > balamt').inner_text),
+          payment_due_date: build_date_or_nil(nested_closing.search('dtpmtdue').inner_text),
+          minimum_due_amount: to_decimal_or_nil(nested_closing.search('minpmtdue').inner_text),
+          past_due_amount: to_decimal_or_nil(nested_closing.search('pastdueamt').inner_text),
+          last_payment_date: build_date_or_nil(nested_closing.search('lastpmtinfo > lastpmtdate').inner_text),
+          last_payment_amount: to_decimal_or_nil(nested_closing.search('lastpmtinfo > lastpmtamt').inner_text),
+          autopay: nested_closing.search("autopay").inner_text
+        })
+      end
+
       def to_decimal(amount)
         BigDecimal.new(amount.to_s.gsub(',', '.'))
+      end
+
+      def to_decimal_or_nil(amount)
+        amount.nil? || amount.empty? ? nil : to_decimal(amount)
+      end
+
+      def build_date_or_nil(date)
+        date.nil? || date.empty? ? nil : build_date(date)
       end
     end
   end
