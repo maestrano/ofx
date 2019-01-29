@@ -16,8 +16,13 @@ module OFX
           description:       node.search('desc').inner_text.upcase,
           bank_id:           nested_account_info.search('bankid').inner_text,
           id:                nested_account_info.search('acctid').inner_text,
-          type:              ACCOUNT_TYPES[node.search('accttype').inner_text.to_s.upcase],
+          type:              fetch_account_type(node),
         })
+      end
+
+      def fetch_account_type(node)
+        acct_type = ACCOUNT_TYPES[node.search('accttype').inner_text.to_s.upcase]
+        acct_type ||= node.search('ccacctinfo').any? ? :creditcard : nil
       end
     end
   end
